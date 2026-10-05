@@ -1,32 +1,32 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const initDatabase = require("./models/schema");
-const apiRoutes = require("./routes/apiRoutes");
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const path = require('path'); // Importação necessária para manipular caminhos de arquivos
+const initDatabase = require('./models/schema');
+const apiRoutes = require('./routes/apiRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuração do CORS (Resolve o ponto crítico de conflito apontado no enunciado)
 app.use(cors());
 app.use(express.json());
 
-// Inicializa as tabelas do banco SQL
+// Inicializa o banco de dados
 initDatabase();
 
-// Rota Base / Hello World (Marco 1)
-app.get("/", (req, res) => {
-  res.json({ message: "ConnectHub API está online e operando!" });
-});
+// --- NOVIDADE: Servir os arquivos visuais do Frontend automaticamente ---
+// Avisa ao Express para disponibilizar os arquivos da pasta do frontend publicamente
+app.use(express.static(path.join(__dirname, '../connecthub-frontend')));
 
-// Vincula todas as rotas estruturadas da API
-app.use("/api", apiRoutes);
+// Vincula todas as rotas de API do backend
+app.use('/api', apiRoutes);
 
-// Tratamento global para rotas não encontradas (404)
-app.use((req, res) => {
-  res.status(404).json({ error: "Rota não encontrada." });
+// --- NOVIDade: Rota principal que abre o index.html ---
+// Quando o usuário acessar a URL base do seu Render, ele abrirá a tela do ConnectHub
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../connecthub-frontend', 'index.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor rodando com sucesso na porta ${PORT}`);
+    console.log(`Servidor rodando com sucesso na porta ${PORT}`);
 });
