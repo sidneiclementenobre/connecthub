@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ConnectHub - Gestão Colaborativa</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      body {
+        background-color: #f4f6f9;
+        color: #333;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      h2 {
+        margin-bottom: 20px;
+        color: #2c3e50;
+        text-align: center;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #555;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background: #3498db;
+        color: #fff;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+      }
+      button:hover {
+        background: #2980b9;
+      }
+      .switch-link {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+        color: #3498db;
+        cursor: pointer;
+      }
+      .error-msg {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        text-align: center;
+        display: none;
+      }
+      .success-msg {
+        background: #d4edda;
+        color: #155724;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        text-align: center;
+        display: none;
+      }
+      .loading {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      .item-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .item-card h4 {
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+      .item-card p {
+        font-size: 14px;
+        color: #666;
+      }
+      .item-card .value {
+        font-weight: bold;
+        color: #2ecc71;
+        margin-top: 5px;
+      }
+      .item-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+      }
+      .btn-delete {
+        background: #e74c3c;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+      .btn-delete:hover {
+        background: #c0392b;
+      }
+      .header-dashboard {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .btn-logout {
+        background: #95a5a6;
+        width: auto;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Mensagens de Feedback Global -->
+      <div id="errorBox" class="error-msg"></div>
+      <div id="successBox" class="success-msg"></div>
+
+      <!-- TELA 1: LOGIN -->
+      <div id="authLoginScreen">
+        <h2>ConnectHub - Login</h2>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="loginEmail" placeholder="seu@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input type="password" id="loginPassword" placeholder="Sua senha" />
+        </div>
+        <button onclick="handleLogin()">Entrar</button>
+        <div class="switch-link" onclick="switchScreen('authRegisterScreen')">
+          Não tem conta? Cadastre-se
+        </div>
+      </div>
+
+      <!-- TELA 2: CADASTRO -->
+      <div id="authRegisterScreen" class="hidden">
+        <h2>Criar Conta</h2>
+        <div class="form-group">
+          <label>Nome Completo</label>
+          <input type="text" id="registerName" placeholder="Seu nome" />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="registerEmail" placeholder="seu@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Senha</label>
+          <input
+            type="password"
+            id="registerPassword"
+            placeholder="Crie uma senha forte"
+          />
+        </div>
+        <button onclick="handleRegister()">Cadastrar</button>
+        <div class="switch-link" onclick="switchScreen('authLoginScreen')">
+          Já tem conta? Faça Login
+        </div>
+      </div>
+
+      <!-- TELA 3: DASHBOARD (CRUD) -->
+      <div id="dashboardScreen" class="hidden">
+        <div class="header-dashboard">
+          <h3 id="welcomeUser">Olá, Usuário</h3>
+          <button class="btn-logout" onclick="handleLogout()">Sair</button>
+        </div>
+
+        <h2>Gerenciar Lançamentos</h2>
+        <!-- Formulário de Registro -->
+        <div
+          style="
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+          "
+        >
+          <div class="form-group">
+            <label>Título / Item</label>
+            <input
+              type="text"
+              id="itemTitle"
+              placeholder="Ex: Assinatura Cloud"
+            />
+          </div>
+          <div class="form-group">
+            <label>Descrição</label>
+            <textarea
+              id="itemDescription"
+              rows="2"
+              placeholder="Detalhes do registro..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Valor (R$)</label>
+            <input
+              type="number"
+              id="itemValue"
+              step="0.01"
+              placeholder="0.00"
+            />
+          </div>
+          <button onclick="handleCreateItem()">Salvar Registro</button>
+        </div>
+
+        <h3>Meus Dados Sincronizados</h3>
+        <div id="itemsContainer" style="margin-top: 15px">
+          <!-- Itens carregados via API entrarão aqui -->
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
