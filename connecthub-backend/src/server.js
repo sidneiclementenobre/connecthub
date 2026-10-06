@@ -23,7 +23,7 @@ app.use("/api", apiRoutes);
 
 // --- NOVIDade: Rota principal que abre o index.html ---
 // Quando o usuário acessar a URL base do seu Render, ele abrirá a tela do ConnectHub
-app.get("/:any*", (req, res) => {
+app.get("", (req, res) => {
   res.sendFile(path.join(__dirname, "../connecthub-frontend", "index.html"));
 });
 
